@@ -1,0 +1,70 @@
+LlylgamynPatchBuilder v1.4 Offline — Validation
+2026-10-05
+
+Basis
+Original v1.3_rebuilt EXE:
+93034624763df453705b420af1bcbefc778deb6f04218ba488829302e9a7d361
+Static analysis only. The original Windows EXE was not executed.
+Original Go source could not be recovered from available saved files.
+The offline implementation was reconstructed from the executable and checked
+against the existing patch files. This is a new implementation, not a claim
+that the original source was obtained or a native EXE was recompiled.
+
+Disc checks (Node.js)
+- Input size: 17,917,536 bytes.
+- Input SHA-256:
+  20881265584cd9e7310a3b62d1f98e2bca2f9a308d6b094fe9ecbfeb2765372f
+- Scenarios: 101 + 130 + 104 = 335 rows.
+- S8B tables: 2,870 / 3,733 / 3,116 uncompressed bytes.
+- Recompression of original tables: 1,937 / 2,506 / 2,113 bytes,
+  matching their original compressed allocation sizes.
+- All 7,618 original MODE1 EDC/ECC sectors reproduced byte-for-byte.
+- No-edit output equals original.
+- Makanito-only output equals existing golden IPS application.
+- Editing and reparsing all three scenarios preserves requested names.
+- Original input remains unchanged after generating patches.
+- Wrong input size and hash are rejected.
+
+Regression checks
+Using the saved 335-row ItemNames_v1_review TSV as test input:
+- Names-only IPS: 9,159 bytes, 239 records.
+- Names + Makanito IPS: 9,565 bytes, 258 records.
+- Both generated IPS files equal the corresponding existing golden files
+  byte-for-byte, both in Node.js and through the browser UI download.
+- Reapplying each generated IPS reproduces the reconstructed modified BIN.
+
+Unit/edge checks
+- CP932 kanji, katakana, half-width katakana, extension characters.
+- Reject blank names, unsupported Unicode, tab/newline/NUL.
+- S8B random/repeated/zero inputs and multiple boundary sizes.
+- Reject malformed S8B header and zero-distance back references.
+- IPS 65,535-byte record limit, 24-bit offset limit, EOF sentinel address.
+- Transactional clipboard paste rejects invalid text without partial edits.
+
+Browser checks
+Headless Chromium on Linux; standalone HTML opened via file://.
+- Original BIN loaded without a server.
+- All three scenario tabs and row counts checked.
+- Single-cell editing and undo checked.
+- Invalid multi-row paste leaves earlier rows unchanged.
+- Valid TSV pasted into all three scenarios, followed by real IPS downloads.
+- Both IPS downloads match existing golden files byte-for-byte.
+- Desktop and narrow viewport layouts checked.
+- No JavaScript page errors.
+- No external HTTP/HTTPS requests during operation.
+- Content Security Policy forbids connect-src, external scripts and plugins.
+
+Limits
+No Windows desktop or ESET installation is available in this environment.
+No ESET scan, VirusTotal scan, Authenticode signing or vendor whitelist
+confirmation has been performed for this release.
+Removing the Go EXE from distribution is an architectural change; it does
+not establish or guarantee a clean verdict by every antivirus product.
+The ESET verdict for the new HTML release must be checked separately.
+End-to-end game execution has not been retested in an emulator for this
+release; generated regression patches are identical to the saved ones.
+
+Distribution
+Contains the standalone HTML, readable source, deterministic build script,
+verification script, README, validation report and SHA-256 list.
+No game BIN, game assets, name presets, original EXE or Windows DLLs included.
